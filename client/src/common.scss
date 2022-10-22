@@ -1,0 +1,10 @@
+@import "~antd/dist/antd.min.css";
+* {
+  font-family: Roboto, sans-serif;
+}
+
+.center-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

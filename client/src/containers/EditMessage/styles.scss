@@ -1,0 +1,52 @@
+.edit-message {
+  width: 70%;
+  margin: auto;
+  .edit-message-wrapper {
+    border: 1px solid #000;
+    margin: 40px;
+  }
+  &-extend {
+    width: 60%;
+    margin: auto;
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
+    button {
+      background-color: rgba(130, 130, 130, 0.4196078431);
+      cursor: pointer;
+      border: none;
+      margin: 5px 0px 8px 0px;
+    }
+  }
+  &-each {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    &-left {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 5px;
+      &-item {
+        margin: 5px;
+        padding: 5px 10px;
+        background: #8282826b;
+        color: #000;
+      }
+    }
+    &-right {
+      padding: 5px;
+      &-arrow {
+        cursor: pointer;
+      }
+    }
+  }
+  @media only screen and (max-width: 768px) {
+    width: 95%;
+    .edit-message-wrapper {
+      border: 1px solid #000;
+      margin: 0px;
+    }
+  }
+}
