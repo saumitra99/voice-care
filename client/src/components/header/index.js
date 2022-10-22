@@ -15,8 +15,9 @@ function header({ children }) {
             </div>
           </a>
           <h1 className="Header-top-left-pagename">
-            {capitalizeFirstLetter(window?.location?.pathname.split("/")[1]) ||
-              "Home"}
+            {capitalizeFirstLetter(
+              window?.location?.pathname.split("/")[1]?.replace(/-/g, " ")
+            ) || "Home"}
           </h1>
         </div>
       </div>
