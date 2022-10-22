@@ -1,13 +1,16 @@
 .all-messages {
   width: 60%;
   margin: auto;
+  &-date-range {
+    margin: 10px 40px -20px 40px;
+  }
   &-box {
     border: 1px solid #000;
     margin: 40px;
     &-each {
       margin: 5px;
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       &-status {
         padding: 5px 10px;
         color: #fff;

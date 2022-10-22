@@ -36,10 +36,9 @@ const isJsonValid = (o, StrictFields = ["uniqueId", "label", "text"]) => {
   return false;
 };
 
+// this api is to update the seen status
 async function postMarkSeen(req, res) {
   const userMessageId = req.body;
-  debugger;
-  console.log(userMessageId, "this req");
   // Messages.update(
   //   { _id: userMessageId },
   //   {
@@ -59,10 +58,9 @@ async function postMarkSeen(req, res) {
     });
 }
 
+// this api is to update the json in the db
 async function postUpdatedJson(req, res) {
   const userUpdatedJson = req.body;
-  debugger;
-  console.log(userUpdatedJson, "this req");
   // if (isJsonValid(userUpdatedJson)) {
   Messages.findByIdAndUpdate({ _id: userUpdatedJson._id }, userUpdatedJson)
     .then((result) => {

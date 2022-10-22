@@ -3,7 +3,7 @@
   margin: auto;
   .edit-message-wrapper {
     border: 1px solid #000;
-    margin: 40px;
+    margin: 15px;
   }
   &-extend {
     width: 60%;
@@ -16,6 +16,7 @@
       background-color: rgba(130, 130, 130, 0.4196078431);
       cursor: pointer;
       border: none;
+      padding: 5px 8px;
       margin: 5px 0px 8px 0px;
     }
   }

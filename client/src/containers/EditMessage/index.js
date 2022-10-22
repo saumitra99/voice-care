@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { IoIosArrowDown } from "react-icons/io";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { displayDateFormat, isJsonValid } from "../../helpers/common";
 import {
@@ -7,28 +7,32 @@ import {
   markAsSeenRequest,
   updateJsonRequest,
 } from "../AllMessages/actions";
+import PropTypes from "prop-types";
 import "./styles.scss";
-// {
-//   "_id": "6352ce79d024ea3a0dd2f802",
-//   "message": "some message",
-//   "isSeen": 0,
-//   "timeStamp": {
-//       "$timestamp": "7157010300917514244"
-//   },
-//   "json": {
-//       "uniqueId": 2,
-//       "label": "some label",
-//       "text": "some text"
-//   }
-// }
+import { Spin } from "antd";
+
 const EachEditFeild = ({ data, open }) => {
-  const [openDropdown, setOpenDropdown] = useState(open);
   const dispatch = useDispatch();
-  const [json, setJson] = useState({ value: data?.json, error: false });
+  const [openDropdown, setOpenDropdown] = useState(open);
+  const [json, setJson] = useState({
+    value: data?.json,
+    error: false,
+    notChanged: true,
+  });
   const [alreadySeen, setAlreadySeen] = useState(data?.isSeen);
+  const jsonUpdatedSuccess = useSelector(
+    (state) => state?.AllMessagesData?.updateJson
+  );
+  const jsonUpdatedLoading = useSelector(
+    (state) => state?.AllMessagesData?.updateJsonLoading
+  );
+
+  // as soon as each dropdown gets there data this will stringify the json
   useEffect(() => {
     setJson({ value: JSON.stringify(data?.json), error: false });
   }, [data]);
+
+  // once the dropdown is open it will mark it as seen
   useEffect(() => {
     if (openDropdown && !data?.isSeen) {
       dispatch(markAsSeenRequest({ _id: data._id }));
@@ -36,6 +40,18 @@ const EachEditFeild = ({ data, open }) => {
     }
   }, [openDropdown]);
 
+  // after updating the json i am making
+  // notChanged to true so to stop the update api call if the
+  // user repeatedly clicks on it
+  useEffect(() => {
+    console.log(jsonUpdatedSuccess, jsonUpdatedLoading, "jsonUpdatedLoading");
+    if (jsonUpdatedSuccess) {
+      setJson((prev) => ({ ...prev, notChanged: true }));
+    }
+    return () => {};
+  }, [jsonUpdatedSuccess]);
+
+  // this func will validate the json and the post it to the server
   const handleSubmit = () => {
     if (!isJsonValid(json?.value)) {
       setJson((prev) => ({ ...prev, error: true }));
@@ -43,7 +59,9 @@ const EachEditFeild = ({ data, open }) => {
       const param = { ...data };
       param.json = JSON.parse(json.value);
       console.log(param, "param");
-      dispatch(updateJsonRequest(param));
+      if (JSON.stringify(param) !== JSON.stringify(data) && !json?.notChanged) {
+        dispatch(updateJsonRequest(param));
+      }
     }
   };
 
@@ -71,7 +89,11 @@ const EachEditFeild = ({ data, open }) => {
             onClick={() => setOpenDropdown((prev) => !prev)}
           >
             <div className="edit-message-each-right-arrow">
-              <IoIosArrowDown size="20px" />
+              {openDropdown ? (
+                <IoIosArrowUp size="20px" />
+              ) : (
+                <IoIosArrowDown size="20px" />
+              )}
             </div>
           </div>
         </div>
@@ -81,7 +103,13 @@ const EachEditFeild = ({ data, open }) => {
               style={{ border: `${json?.error ? "2px solid red" : ""}` }}
               name="uniqueJson"
               value={json?.value}
-              onChange={(e) => setJson({ value: e.target.value })}
+              onChange={(e) =>
+                setJson({
+                  value: e.target.value,
+                  error: false,
+                  notChanged: false,
+                })
+              }
             />
             {json?.error && (
               <p style={{ color: "red", fontSize: "12px" }}>
@@ -89,8 +117,14 @@ const EachEditFeild = ({ data, open }) => {
               </p>
             )}
             <div className="center-div">
-              <button type="button" name="save" onClick={handleSubmit}>
-                Apply changes
+              <button
+                type="button"
+                name="save"
+                onClick={() => {
+                  if (!jsonUpdatedLoading) handleSubmit();
+                }}
+              >
+                {jsonUpdatedLoading ? <Spin /> : "Apply changes"}
               </button>
             </div>
           </div>
@@ -104,6 +138,8 @@ function EditMessage() {
   const dispatch = useDispatch();
   const AllMessagesData = useSelector((state) => state.AllMessagesData);
   const queryID = new URLSearchParams(window?.location?.search).get("id");
+
+  // this is to all the all messages api
   useEffect(() => {
     dispatch(allMessagesRequest());
   }, []);
@@ -116,5 +152,8 @@ function EditMessage() {
     </div>
   );
 }
-
+EachEditFeild.propType = {
+  data: PropTypes.objectOf(PropTypes.string).isRequired,
+  open: PropTypes.bool.isRequired,
+};
 export default EditMessage;
